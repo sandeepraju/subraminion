@@ -48,7 +48,7 @@ def run():
     s.process_files(verbose=args.verbose_output)
     duplicate_file_list = s.get_duplicate_file_list()
     if len(duplicate_file_list) > 0:
-        print 'Sets with Duplicates!'
+        print 'Sets with Duplicates!' # TODO: change this to a better message.
     else:
         print 'No duplicates were found!'
     for i in xrange(len(duplicate_file_list)):

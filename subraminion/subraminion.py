@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 Sandeep Raju. See LICENSE.txt for details.
 import os
+import sys
 import re
 import hashlib
+import traceback
 from collections import defaultdict
 
 
@@ -26,9 +28,20 @@ class Subraminion(object):
         for root, dirs, files in os.walk(self._base_path):
             for f in files:
                 file_path = os.path.join(root, f)
+                if not os.path.isfile(file_path):
+                    # ignore any non regular files.
+                    continue
                 if verbose:
                     print '[processing] %s' % file_path
-                file_sha1 = self._calculate_sha1(file_path)
+                try:
+                    file_sha1 = self._calculate_sha1(file_path)
+                except IOError as e:
+                    print str(e)
+                    continue
+                except Exception as e:
+                    # print traceback
+                    traceback.print_exc(file=sys.stdout)
+                    sys.exit(1)  # abnormal exit
                 self._sha1_file_map[file_sha1].append(file_path)
 
         # generate a duplicate list from the sha file map.
