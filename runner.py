@@ -44,7 +44,7 @@ def run():
     target_directory = os.path.abspath(args.directory)
 
     # start processing the files.
-    s = Subraminion(target_directory)
+    s = Subraminion(target_directory, file_type=args.file_type)
     s.process_files(verbose=args.verbose_output)
     duplicate_file_list = s.get_duplicate_file_list()
     if len(duplicate_file_list) > 0:

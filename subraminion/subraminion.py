@@ -13,13 +13,14 @@ class Subraminion(object):
     """
     """
 
-    def __init__(self, base_path, pattern=None):
+    def __init__(self, base_path, file_type=None):
         """
         """
         self._sha1_file_map = defaultdict(list)
         self._duplicate_file_list = []
         self._base_path = base_path
-        self._pattern = pattern
+        self._file_type_regex = re.compile(
+            r'\.%s$' % file_type) if file_type else None
 
     def process_files(self, verbose=False):
         """
@@ -27,6 +28,9 @@ class Subraminion(object):
         # http://stackoverflow.com/a/16974952/1044366
         for root, dirs, files in os.walk(self._base_path):
             for f in files:
+                if self._file_type_regex and not self._file_type_regex.search(f):
+                    # ignore files that do not come under the filter
+                    continue
                 file_path = os.path.join(root, f)
                 if not os.path.isfile(file_path):
                     # ignore any non regular files.
