@@ -8,6 +8,8 @@ import signal
 from subraminion import Subraminion, __version__
 
 # define & register SIGINT handlers
+
+
 def signal_handler_for_SIGINT(signal, frame):
     """
     """
@@ -15,6 +17,7 @@ def signal_handler_for_SIGINT(signal, frame):
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler_for_SIGINT)
+
 
 def run():
     """
@@ -31,7 +34,8 @@ def run():
                         help='Delete the duplicates automatically if found.',
                         dest='delete_duplicates')
     parser.add_argument('-p', '--prompt', action='store_true', required=False,
-                        help='Prompts for action if duplicates are found.',
+                        help=('Prompts for action if duplicates are found. '
+                              'This option can be used only with -d | --delete'),
                         dest='prompt_user')
     parser.add_argument('-v', '--verbose', action='store_true', required=False,
                         help='Show verbose output while processing files.',
@@ -40,23 +44,23 @@ def run():
                         version='Subraminion %s' % __version__)
     args = parser.parse_args()
 
+    # check the preconditions.
+    if not args.delete_duplicates and args.prompt_user:
+        # prompt cannot be given without -d | --delete option
+        # this should ideally be handled using an argparse custom action
+        # http://stackoverflow.com/a/5165960/1044366 - ignoring for now.
+        print 'subraminion: error: --prompt can be used only with --delete'
+        return
     # normalize the path into an absolute path.
     target_directory = os.path.abspath(args.directory)
 
     # start processing the files.
     s = Subraminion(target_directory, file_type=args.file_type)
-    s.process_files(verbose=args.verbose_output)
-    duplicate_file_list = s.get_duplicate_file_list()
-    if len(duplicate_file_list) > 0:
-        print 'Sets with Duplicates!' # TODO: change this to a better message.
-    else:
-        print 'No duplicates were found!'
-    for i in xrange(len(duplicate_file_list)):
-        print '- [set %s]' % (i + 1), '-' * 80
-        for j in xrange(len(duplicate_file_list[i])):
-            print '(%s) %s' % (j + 1, duplicate_file_list[i][j])
-        print ''
-
+    s.process_files(
+        verbose=args.verbose_output,
+        delete_duplicates=args.delete_duplicates,
+        prompt_user=args.prompt_user
+    )
 
 if __name__ == '__main__':
     run()

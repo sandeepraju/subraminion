@@ -22,7 +22,7 @@ class Subraminion(object):
         self._file_type_regex = re.compile(
             r'\.%s$' % file_type) if file_type else None
 
-    def process_files(self, verbose=False):
+    def process_files(self, verbose=False, delete_duplicates=False, prompt_user=False):
         """
         """
         # http://stackoverflow.com/a/16974952/1044366
@@ -52,10 +52,88 @@ class Subraminion(object):
         self._duplicate_file_list = filter(
             lambda x: True if len(x) > 1 else False, self._sha1_file_map.values())
 
-    def get_duplicate_file_list(self):
+        if delete_duplicates and not prompt_user:
+            # exterminator mode!
+            self._delete_duplicate_files()
+            return
+
+        if delete_duplicates and prompt_user:
+            # prompt before deleting
+            for i in xrange(len(self._duplicate_file_list)):
+                print '- [set %s]' % (i + 1), '-' * 80
+                for j in xrange(len(self._duplicate_file_list[i])):
+                    print '(%s) %s' % (j + 1, self._duplicate_file_list[i][j])
+                print ''
+                print 'What do we do now?'
+                print '[1] Delete all duplicates.'
+                print '[2] Let me pick the ones to delete.'
+                exit_flag = False
+                while not exit_flag:
+                    choice = raw_input('Your choice: ')
+                    if choice not in ('1', '2'):
+                        print 'Invalid option! Try again...'
+                    else:
+                        if choice == '1':
+                            for file_path in self._duplicate_file_list[i][1:]:
+                                print '[deleting] %s' % file_path
+                                os.remove(file_path)
+                        elif choice == '2':
+                            print 'Enter the file id (space separated for multiple)'
+                            while True:
+                                choice = raw_input('>>')
+                                if not set(choice).issubset(set(list('0123456789 '))):
+                                    # invalid input
+                                    print 'Invalid option! Try again...'
+                                else:
+                                    # ugly hacks for user input validation :\
+                                    choice_list = list(
+                                        set((choice + ' ').split(' ')))
+                                    # get the null str to the start
+                                    choice_list.sort()
+                                    choice_list = [int(x)
+                                                   for x in choice_list[1:]]
+                                    delete_list = list(
+                                        set(range(1, len(self._duplicate_file_list[i]) + 1)) & set(choice_list))
+                                    invalid_list = list(
+                                        set(choice_list) - set(range(1, len(self._duplicate_file_list[i]) + 1)))
+                                    for j in invalid_list:
+                                        print '[ignoring] Invalid option %s.' % str(j)
+                                    for j in delete_list:
+                                        # as j starts with 1
+                                        print '[deleting] %s' % self._duplicate_file_list[i][j - 1]
+                                        os.remove(
+                                            self._duplicate_file_list[i][j - 1])
+                                    break
+                        exit_flag = True
+            return
+
+        # just list the duplicate files.
+        self._pretty_print_duplicate_file_list()
+
+    def _pretty_print_duplicate_file_list(self):
         """
         """
-        return self._duplicate_file_list
+        if len(self._duplicate_file_list) > 0:
+            print 'Duplicate files were found!'
+        else:
+            print 'No duplicates were found!'
+            return
+        for i in xrange(len(self._duplicate_file_list)):
+            print '- [set %s]' % (i + 1), '-' * 80
+            for j in xrange(len(self._duplicate_file_list[i])):
+                print '(%s) %s' % (j + 1, self._duplicate_file_list[i][j])
+            print ''
+
+    def _delete_duplicate_files(self):
+        """
+        """
+        for file_set in self._duplicate_file_list:
+            # delete all copies except the first one.
+            for file_path in file_set[1:]:
+                print '[deleting] %s' % file_path
+                os.remove(file_path)
+
+        self._duplicate_file_list = []  # all duplicates are removed.
 
     def _calculate_sha1(self, file_path):
         """
