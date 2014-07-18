@@ -19,13 +19,15 @@ class Subraminion(object):
         self._base_path = base_path
         self._pattern = pattern
 
-    def process_files(self):
+    def process_files(self, verbose=False):
         """
         """
         # http://stackoverflow.com/a/16974952/1044366
         for root, dirs, files in os.walk(self._base_path):
             for f in files:
                 file_path = os.path.join(root, f)
+                if verbose:
+                    print '[processing] %s' % file_path
                 file_sha1 = self._calculate_sha1(file_path)
                 self._sha1_file_map[file_sha1].append(file_path)
 

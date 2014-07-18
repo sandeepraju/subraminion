@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 Sandeep Raju. See LICENSE.txt for details.
 import os
+import sys
 import argparse
+import signal
 
 from subraminion import Subraminion, __version__
 
+# define & register SIGINT handlers
+def signal_handler_for_SIGINT(signal, frame):
+    """
+    """
+    # exit normally
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler_for_SIGINT)
 
 def run():
     """
@@ -23,6 +33,9 @@ def run():
     parser.add_argument('-p', '--prompt', action='store_true', required=False,
                         help='Prompts for action if duplicates are found.',
                         dest='prompt_user')
+    parser.add_argument('-v', '--verbose', action='store_true', required=False,
+                        help='Show verbose output while processing files.',
+                        dest='verbose_output')
     parser.add_argument('--version', action='version',
                         version='Subraminion %s' % __version__)
     args = parser.parse_args()
@@ -32,8 +45,12 @@ def run():
 
     # start processing the files.
     s = Subraminion(target_directory)
-    s.process_files()
+    s.process_files(verbose=args.verbose_output)
     duplicate_file_list = s.get_duplicate_file_list()
+    if len(duplicate_file_list) > 0:
+        print 'Sets with Duplicates!'
+    else:
+        print 'No duplicates were found!'
     for i in xrange(len(duplicate_file_list)):
         print '- [set %s]' % (i + 1), '-' * 80
         for j in xrange(len(duplicate_file_list[i])):
