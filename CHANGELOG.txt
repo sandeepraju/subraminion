@@ -1,0 +1,9 @@
+Release: 0.0.2a
+---------------
+* Fixes the setup.py description.
+* Adds this CHANGELOG file.
+
+Release: 0.0.1a
+---------------
+* First working version of the tool.
+  

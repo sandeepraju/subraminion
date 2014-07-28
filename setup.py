@@ -4,12 +4,12 @@ from setuptools import setup
 
 setup(
     name='Subraminion',
-    version='0.0.1a',
+    version='0.0.2a',
     url='https://github.com/sandeepraju/subraminion',
     author='Sandeep Raju',
     author_email='me@sandeepraju.in',
     license=open('LICENSE.txt').read(),
-    description='',
+    description='A nifty console tool to find / delete duplicate files.',
     long_description=open('README.md').read(),
     packages=['subraminion'],
     py_modules=['runner'],
