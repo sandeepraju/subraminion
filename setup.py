@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='Subraminion',
-    version='0.0.1-alpha',
+    version='0.0.1a',
     url='https://github.com/sandeepraju/subraminion',
     author='Sandeep Raju',
     author_email='me@sandeepraju.in',
