@@ -54,6 +54,11 @@ def run():
     # normalize the path into an absolute path.
     target_directory = os.path.abspath(args.directory)
 
+    # check if the path passed is actually a direcory
+    if not os.path.isdir(target_directory):
+        print "subraminion: error: the passed directory path is invalid."
+        return
+
     # start processing the files.
     s = Subraminion(target_directory, file_type=args.file_type)
     s.process_files(

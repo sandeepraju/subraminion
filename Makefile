@@ -1,4 +1,4 @@
-.PHONY: all clean build install uninstall test
+.PHONY: all clean build install uninstall test reinstall
 
 all: clean
 
@@ -16,3 +16,6 @@ install:
 
 uninstall:
 	yes | pip uninstall subraminion
+
+reinstall:
+	make uninstall && make clean && make build && make install
