@@ -3,7 +3,39 @@ Subraminion
 
 A nifty console tool to find / delete duplicate files.
 
-## Usage
+## Getting started
+
+### List all duplicates in a directory
+
+```
+subraminion /path/to/the/directory/
+```
+
+### List all duplicate pdf files in a directory
+
+```
+subraminion -t pdf /path/to/the/directory/
+```
+
+### Delete all duplicate files in a directory
+
+This can be done in two ways:
+
+1. Prompt Mode - prompts you for every duplicate and takes action based on that
+
+```
+subraminion -p -d /path/to/the/directory/
+```
+
+2. Exterminator Mode - deletes all the duplicates silently without any user prompt
+
+```
+subraminion -d /path/to/the/directory/
+```
+
+NOTE: This mode is dangerous. Use it with caution!
+
+## Reference of the command
 
 ```
 usage: subraminion [-h] [-t FILE_TYPE] [-d] [-p] [-v] [--version] directory
